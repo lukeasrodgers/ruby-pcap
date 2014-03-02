@@ -30,6 +30,7 @@ module Pcap
       @snaplen = 68
       @log_packets = false
       @duplicated = nil
+      @promiscuous = 0
 
       opts = OptionParser.new do |opts|
         opts.on('-d') {$DEBUG = true}
@@ -40,6 +41,7 @@ module Pcap
         opts.on('-c COUNT', OptionParser::DecimalInteger) {|i| @count = i}
         opts.on('-s LEN', OptionParser::DecimalInteger) {|i| @snaplen = i}
         opts.on('-l') { @log_packets = true }
+        opts.on('-p') { @promiscuous = 1 }
       end
       begin
         opts.parse!
@@ -58,7 +60,7 @@ module Pcap
       # open
       begin
         if @device
-          @capture = Capture.open_live(@device, @snaplen)
+          @capture = Capture.open_live(@device, @snaplen, @promiscuous)
         elsif @rfile
           if @rfile !~ /\.gz$/
             @capture = Capture.open_offline(@rfile)
